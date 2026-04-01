@@ -1,0 +1,47 @@
+// 声音小游戏
+const soundGame = {
+  id: 'sound-game',
+  title: '声音小游戏',
+  icon: '🎵',
+  description: '闭上眼睛听 30 秒，听听路上有什么声音',
+  color: '#FFD97D',
+  steps: [
+    {
+      type: 'intro',
+      text: '我们来玩一个听声音的游戏！'
+    },
+    {
+      type: 'observation',
+      text: '找一个安全的地方，闭上眼睛...',
+      timer: 30
+    },
+    {
+      type: 'input',
+      inputType: 'text',
+      text: '你听到了什么声音？（可以说出或输入）'
+    },
+    {
+      type: 'observation',
+      text: '再仔细听听，还有没有更小的声音？鸟叫？风声？'
+    },
+    {
+      type: 'challenge',
+      text: '数一数，你一共听到了几种不同的声音？'
+    },
+    {
+      type: 'input',
+      inputType: 'number',
+      text: '你听到了几种声音？'
+    },
+    {
+      type: 'complete',
+      text: '哇！你的小耳朵真灵敏！世界上有好多美妙的声音等着我们去听呢'
+    }
+  ],
+  badge: 'sound-hunter',
+  badgeName: '声音猎人',
+  badgeThreshold: 3
+};
+
+// 注册游戏
+Games.register(soundGame);
