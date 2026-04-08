@@ -1,1 +1,0 @@
-function BadgeCard({badgeId:d,unlocked:a,badgeName:e,icon:n}){return`\n    <div class="badge-card ${a?"unlocked":"locked"}">\n      <div class="badge-icon">${a?n:"🔒"}</div>\n      <div class="badge-name">${e}</div>\n      ${a?'<div class="badge-date">已收集</div>':""}\n    </div>\n  `}window.BadgeCard=BadgeCard;
