@@ -1,0 +1,70 @@
+name: PR 预览部署
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened, closed]
+    branches:
+      - main
+
+# 同一 PR 只保留最新一次运行
+concurrency:
+  group: pr-preview-${{ github.event.number }}
+  cancel-in-progress: true
+
+jobs:
+  deploy-preview:
+    name: PR 预览（GitHub Pages）
+    runs-on: ubuntu-latest
+
+    permissions:
+      contents: write        # 写入 gh-pages 分支
+      pull-requests: write   # 在 PR 中发表评论
+
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 安装构建工具
+        if: github.event.action != 'closed'
+        run: |
+          npm install -g html-minifier-terser terser clean-css-cli
+
+      - name: 构建产物
+        if: github.event.action != 'closed'
+        run: |
+          mkdir -p dist/css dist/js dist/games dist/components
+
+          npx html-minifier-terser index.html \
+            --collapse-whitespace \
+            --remove-comments \
+            -o dist/index.html
+
+          npx cleancss -o dist/css/main.css css/main.css
+
+          for f in js/store.js js/games.js js/game-engine.js js/app.js; do
+            npx terser "$f" -o "dist/$f" --compress --mangle
+          done
+
+          for f in games/shop-game.js games/plant-game.js games/sound-game.js games/color-game.js games/people-game.js; do
+            npx terser "$f" -o "dist/$f" --compress --mangle
+          done
+
+          npx terser components/badge-card.js \
+            -o dist/components/badge-card.js --compress --mangle
+
+      # rossjrw/pr-preview-action：纯 GitHub Pages PR 预览，零额外配置
+      - name: 部署 / 清理 PR 预览
+        uses: rossjrw/pr-preview-action@v1
+        with:
+          source-dir: dist/
+          preview-branch: gh-pages
+          umbrella-dir: pr-preview
+          # PR 关闭时自动清理对应子目录
+          action: auto
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

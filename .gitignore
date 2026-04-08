@@ -1,0 +1,22 @@
+# macOS
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+
+# 编辑器
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# 构建产物
+dist/
+
+# 本地工具缓存
+.lighthouseci/
+node_modules/
+
+# WorkBuddy 本地数据（不入库）
+.workbuddy/
