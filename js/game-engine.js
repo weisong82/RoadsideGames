@@ -3,6 +3,7 @@ const GameEngine = {
   currentStepIndex: 0,
   onComplete: null,
   timerInterval: null,
+  currentPhoto: null,
 
   // 开始游戏
   start(gameId, callbacks = {}) {
@@ -15,6 +16,14 @@ const GameEngine = {
     this.currentGame = game;
     this.currentStepIndex = 0;
     this.onComplete = callbacks.onComplete || (() => {});
+
+    // 如果游戏包含照片库，随机选一张
+    if (game.photos && game.photos.length > 0) {
+      const randomIndex = Math.floor(Math.random() * game.photos.length);
+      this.currentPhoto = game.photos[randomIndex];
+    } else {
+      this.currentPhoto = null;
+    }
 
     // 记录游戏开始
     Store.incrementGame(gameId);
@@ -111,11 +120,27 @@ const GameEngine = {
       case 'input':
         return `
           <div class="step-input">
+            ${step.showPhoto && this.currentPhoto ? `
+              <div class="plant-photo-container">
+                <img
+                  src="${this.currentPhoto.imageUrl}"
+                  alt="${this.currentPhoto.name}"
+                  class="plant-photo"
+                  onerror="this.parentElement.querySelector('.plant-photo-fallback').style.display='flex';this.style.display='none'"
+                >
+                <div class="plant-photo-fallback">🌿</div>
+                <p class="plant-photo-hint">${this.currentPhoto.hint}</p>
+              </div>
+            ` : ''}
             <p class="step-text">${step.text}</p>
             ${step.inputType === 'number'
               ? `<input type="number" class="input-field" placeholder="输入你的答案">`
               : `<input type="text" class="input-field" placeholder="输入你的答案">`
             }
+            ${step.showPhoto && this.currentPhoto ? `
+              <button class="btn btn-outline plant-reveal-btn" onclick="this.parentElement.querySelector('.plant-photo-answer').style.display='block';this.style.display='none'">查看答案</button>
+              <p class="plant-photo-answer">参考答案：<strong>${this.currentPhoto.name}</strong></p>
+            ` : ''}
           </div>
         `;
 
@@ -214,6 +239,7 @@ const GameEngine = {
     }
 
     this.currentGame = null;
+    this.currentPhoto = null;
   },
 
   // 获取徽章名称
