@@ -143,14 +143,18 @@ const peopleGame = {
       text: '他们在做什么工作呢？仔细观察一下'
     },
     {
+      type: 'challenge',
+      text: '如果有机会，跟他们打个招呼吧！说声"您好"或者"辛苦了"'
+    },
+    {
       type: 'input',
       inputType: 'text',
       showPhoto: true,
       text: '猜猜这位叔叔/阿姨是做什么工作的？'
     },
     {
-      type: 'challenge',
-      text: '如果有机会，跟他们打个招呼吧！说声"您好"或者"辛苦了"'
+      type: 'observation',
+      text: '每一份工作都很重要，都在让我们的城市变得更美好'
     },
     {
       type: 'complete',
