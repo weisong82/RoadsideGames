@@ -5,11 +5,28 @@ const GameEngine = {
   timerInterval: null,
   currentPhoto: null,
 
+  // 显示 Toast 提示
+  showToast(message, type = 'info') {
+    const toast = document.createElement('div');
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    // Trigger transition
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => toast.classList.add('toast-show'));
+    });
+    setTimeout(() => {
+      toast.classList.remove('toast-show');
+      setTimeout(() => toast.remove(), 350);
+    }, 3000);
+  },
+
   // 开始游戏
   start(gameId, callbacks = {}) {
     const game = Games.get(gameId);
     if (!game) {
       console.error('Game not found:', gameId);
+      this.showToast('找不到该游戏，请返回首页重试 🙁', 'error');
       return;
     }
 
@@ -25,8 +42,9 @@ const GameEngine = {
       this.currentPhoto = null;
     }
 
-    // 记录游戏开始
+    // 记录游戏开始并更新连续打卡
     Store.incrementGame(gameId);
+    Store.updateStreak();
 
     // 渲染游戏界面
     this.renderStep();
@@ -85,16 +103,37 @@ const GameEngine = {
       if (remaining <= 0) {
         clearInterval(this.timerInterval);
         // 时间到提示
-        if (Store.state.soundEnabled) {
+        if (Store.state.settings.soundEnabled) {
           this.playSound('timer-complete');
         }
       }
     }, 1000);
   },
 
-  // 音效播放（预留）
+  // 音效播放（Web Audio API）
   playSound(type) {
-    console.log('Play sound:', type);
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (!AudioCtx) return;
+    try {
+      const ctx = new AudioCtx();
+      const oscillator = ctx.createOscillator();
+      const gainNode = ctx.createGain();
+      oscillator.connect(gainNode);
+      gainNode.connect(ctx.destination);
+
+      if (type === 'timer-complete') {
+        // 两音节上升短促音
+        oscillator.type = 'sine';
+        oscillator.frequency.setValueAtTime(660, ctx.currentTime);
+        oscillator.frequency.setValueAtTime(880, ctx.currentTime + 0.18);
+        gainNode.gain.setValueAtTime(0.3, ctx.currentTime);
+        gainNode.gain.exponentialRampToValueAtTime(0.01, ctx.currentTime + 0.5);
+        oscillator.start(ctx.currentTime);
+        oscillator.stop(ctx.currentTime + 0.5);
+      }
+    } catch (e) {
+      // Web Audio API 不可用时静默失败
+    }
   },
 
   // 渲染步骤内容
