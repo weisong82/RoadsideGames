@@ -128,7 +128,7 @@ const GameEngine = {
                   class="plant-photo"
                   onerror="this.parentElement.querySelector('.plant-photo-fallback').style.display='flex';this.style.display='none'"
                 >
-                <div class="plant-photo-fallback">🌿</div>
+                <div class="plant-photo-fallback">${this.currentPhoto.fallbackIcon || '🌿'}</div>
                 <p class="plant-photo-hint">${this.currentPhoto.hint}</p>
               </div>
             ` : ''}
