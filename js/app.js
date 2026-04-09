@@ -25,7 +25,7 @@ function router() {
   } else if (routes[hash]) {
     routes[hash]();
   } else {
-    routes['/']();
+    renderNotFound();
   }
 }
 
@@ -58,8 +58,33 @@ function renderHome() {
   const dailyGame = Games.getDaily();
   const allGames = Games.getAll();
 
+  // 连续打卡横幅
+  const streak = Store.state.streak;
+  const lastPlayDate = Store.state.lastPlayDate;
+  const today = new Date().toDateString();
+  const yesterday = new Date(Date.now() - 86400000);
+  const yesterdayStr = yesterday.toDateString();
+
+  let streakBanner = '';
+  if (streak > 1 && lastPlayDate === today) {
+    // 今天已经玩了，显示当前连续天数
+    streakBanner = `
+      <div class="streak-banner">
+        <span class="streak-icon">🔥</span>
+        <span>连续打卡 <strong>${streak}</strong> 天！继续保持！</span>
+      </div>`;
+  } else if (streak > 0 && lastPlayDate === yesterdayStr) {
+    // 昨天玩了，今天还没玩，提醒不要断打卡
+    streakBanner = `
+      <div class="streak-banner streak-warning">
+        <span class="streak-icon">⏰</span>
+        <span>连续打卡 <strong>${streak}</strong> 天！今天还没玩，快来保住连击！</span>
+      </div>`;
+  }
+
   mainContent.innerHTML = `
     <div class="home-page">
+      ${streakBanner}
       <!-- 每日挑战卡片 -->
       <div class="daily-card" style="background: linear-gradient(135deg, ${dailyGame.color}, ${adjustColor(dailyGame.color, -20)})">
         <div class="daily-badge">🌟 今日推荐</div>
@@ -167,6 +192,19 @@ function renderAbout() {
       <div class="about-footer">
         <p>Made with ❤️ for curious families</p>
       </div>
+    </div>
+  `;
+}
+
+// 404 页面渲染
+function renderNotFound() {
+  const mainContent = document.getElementById('main-content');
+  mainContent.innerHTML = `
+    <div class="error-page">
+      <div class="error-icon">🗺️</div>
+      <h2>页面不见了</h2>
+      <p>找不到你要去的地方</p>
+      <button class="btn btn-primary" onclick="window.location.hash='#/'">回到首页</button>
     </div>
   `;
 }
