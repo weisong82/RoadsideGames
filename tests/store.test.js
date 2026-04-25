@@ -118,7 +118,7 @@ describe('Store', () => {
   // ─── incrementGame() ──────────────────────────────────────────────────────
 
   describe('incrementGame()', () => {
-    test('initialises count from 0 and returns 1 on first call', () => {
+    test('initializes count from 0 and returns 1 on first call', () => {
       const count = Store.incrementGame('shop-game');
       expect(count).toBe(1);
     });
