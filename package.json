@@ -1,0 +1,12 @@
+{
+  "name": "roadside-games",
+  "version": "1.0.0",
+  "description": "路上小游戏 — mobile-first web app for parent-child interactive mini-games",
+  "scripts": {
+    "test": "jest"
+  },
+  "devDependencies": {
+    "jest": "^29.7.0",
+    "jest-environment-jsdom": "^29.7.0"
+  }
+}
