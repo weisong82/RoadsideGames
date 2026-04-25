@@ -33,6 +33,10 @@ function router() {
 window.addEventListener('hashchange', router);
 window.addEventListener('DOMContentLoaded', router);
 
+// 导出供测试使用
+window.adjustColor = adjustColor;
+window.router = router;
+
 // 辅助函数：调整颜色亮度
 function adjustColor(color, percent) {
   const num = parseInt(color.replace('#', ''), 16);
